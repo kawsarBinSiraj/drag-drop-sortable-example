@@ -13,7 +13,13 @@ function App() {
                 <img src={reactLogo} className="logo react inline-block" alt="React logo" />
             </div>
             <div className="w-[1200px] mx-auto text-start">
-                <p className="mb-2 text-xs text-gray-600">
+                <p className="mb-0 text-sm text-gray-600">
+                    github :{" "}
+                    <a href="https://github.com/kawsarBinSiraj/drag-drop-sortable-example" className="text-blue-500" target="_blank" rel="noopener noreferrer">
+                       https://github.com/kawsarBinSiraj/drag-drop-sortable-example
+                    </a>
+                </p>
+                <p className="mb-3 text-xs text-gray-600">
                     @developed_by :{" "}
                     <a href="https://kawsarbinsiraj.github.io/" className="text-blue-500" target="_blank" rel="noopener noreferrer">
                         Kawsar Bin Siraj
