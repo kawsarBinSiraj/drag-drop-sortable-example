@@ -1,0 +1,12 @@
+// jsconfig.json
+{
+    "compilerOptions": {
+        "baseUrl": "./", // Base URL for path resolution
+        "paths": {
+            "@/*": ["./src/*"], // Map '@' to the 'src' directory
+            "@components/*": ["./src/components/*"] // Map '@components' to 'src/components'
+        },
+        "jsx": "react-jsx" // Important for React projects
+    },
+    "include": ["src"] // Include your source directory
+}
