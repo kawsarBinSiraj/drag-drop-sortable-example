@@ -21,8 +21,8 @@ function App() {
                         />
                     </svg>{" "}
                     :{" "}
-                    <a href="https://github.com/kawsarBinSiraj/drag-drop-sortable-example" className="text-blue-500" target="_blank" rel="noopener noreferrer">
-                        https://github.com/kawsarBinSiraj/drag-drop-sortable-example
+                    <a href="https://github.com/kawsarBinSiraj/drag-drop-sorter" className="text-blue-500" target="_blank" rel="noopener noreferrer">
+                       https://github.com/kawsarBinSiraj/drag-drop-sorter
                     </a>
                 </p>
                 <p className="mb-3 text-xs text-gray-600">
