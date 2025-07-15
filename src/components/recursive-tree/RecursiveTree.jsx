@@ -9,10 +9,10 @@ import React, { useState } from "react";
  */
 const Item = ({ item, level = 0, onAddChild }) => {
     return (
-        <div className={`pl-4 my-2 border-l-2 transition-all`} style={{ marginLeft: level * 16 }}>
-            <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-3 border border-gray-200 hover:shadow-md transition">
-                <div className="font-medium text-gray-800">{item.title}</div>
-                <button onClick={() => onAddChild(item.id)} className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">
+        <div className={`pl-4 my-2 border-l-1 transition-all`} style={{ marginLeft: level * 16 }}>
+            <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-3 border border-gray-100 hover:shadow-md transition">
+                <div className="font-medium text-sm text-gray-800">{item.title}</div>
+                <button onClick={() => onAddChild(item.id)} className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition cursor-pointer">
                     + Add Child
                 </button>
             </div>

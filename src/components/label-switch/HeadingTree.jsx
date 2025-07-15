@@ -1,7 +1,23 @@
 import React, { useState } from "react";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 
+/**
+ * ListItem Component
+ *
+ * Renders a heading item with a background color and border
+ * based on its label. The label can range from H1 to H6.
+ * The component is styled differently for H1 (non-draggable).
+ *
+ * @param {Object} item - The item data containing id, label, and title.
+ * @returns {JSX.Element} The rendered list item.
+ */
 const ListItem = ({ item = { id: "", label: "", title: "" } }) => {
+    /**
+     * Determines the background and text color based on the label.
+     *
+     * @param {string} l - The label of the item (e.g., H1, H2).
+     * @returns {string} The CSS class string for background and text color.
+     */
     const getBgColor = (l = "") => {
         switch (l) {
             case "H1":
@@ -29,25 +45,61 @@ const ListItem = ({ item = { id: "", label: "", title: "" } }) => {
     );
 };
 
+/**
+ * DraggableItem Component
+ *
+ * A container component to wrap a {@link ListItem} component
+ * with drag-and-drop functionality.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.id - Unique identifier for the item.
+ * @param {JSX.Element} props.children - The `ListItem` component to render.
+ * @returns {JSX.Element} The rendered DraggableItem component.
+ */
 const DraggableItem = ({ id, children }) => {
+    /**
+     * Retrieves the Draggable properties and event listeners
+     *
+     * @see https://docs.dndkit.com/api/use-draggable
+     */
     const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
 
     return (
         <div
             ref={setNodeRef}
+            // Pass the Draggable event listeners to the container
             {...listeners}
+            // Pass the Draggable attributes to the container
             {...attributes}
-            className="p-0 w-full bg-white border border-gray-100 cursor-grab text-left rounded-lg"
+            // Add the Draggable transformation to the container
             style={{
                 transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : undefined,
             }}
+            // Add some padding and border to the container
+            className="p-0 w-full bg-white border border-gray-100 cursor-grab text-left rounded-lg"
         >
             {children}
         </div>
     );
 };
 
+/**
+ * DroppableSlot Component
+ *
+ * A component to render a droppable slot placeholder.
+ * It will be rendered when the user drags an item over the
+ * droppable area.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.id - Unique identifier for the slot.
+ * @returns {JSX.Element} The rendered DroppableSlot component.
+ */
 const DroppableSlot = ({ id }) => {
+    /**
+     * Retrieves the Droppable properties and event listeners
+     *
+     * @see https://docs.dndkit.com/api/use-droppable
+     */
     const { setNodeRef, isOver } = useDroppable({ id });
 
     return <div ref={setNodeRef} className={`transition-all ${isOver ? "h-2 my-1 bg-orange-500 rounded-2xl" : "h-[5px]"}`} />;
@@ -67,6 +119,71 @@ const DroppableBox = ({ id, items, level }) => {
             ))}
         </div>
     );
+};
+
+/**
+ * Nests the heading items in correct hierarchical structure based on label levels.
+ * @param {Object.<string, Array>} headingItems
+ * @returns {Array} Nested array starting from H1 items
+ */
+const nestHeadingItems = (headingItems) => {
+    const allItems = [];
+
+    // Flatten and maintain order (H1..H6 mix)
+    ["h1", "h2", "h3", "h4", "h5", "h6"].forEach((level) => {
+        (headingItems[level] || []).forEach((item) => {
+            allItems.push({ ...item, children: [] });
+        });
+    });
+
+    // Sort by appearance if needed, or keep as is (assuming original order is correct)
+    const root = [];
+    const stack = [];
+
+    allItems.forEach((item) => {
+        const level = parseInt(item.label[1]); // e.g., "H2" → 2
+
+        // Pop higher/equal levels
+        while (stack.length && parseInt(stack[stack.length - 1].label[1]) >= level) {
+            stack.pop();
+        }
+
+        if (stack.length === 0) {
+            root.push(item); // H1 level or no parent
+        } else {
+            stack[stack.length - 1].children.push(item); // Add to parent
+        }
+
+        stack.push(item); // Push current as new parent
+    });
+
+    return root;
+};
+/**
+ * Flattens a nested heading structure into a grouped object by heading level.
+ *
+ * @param {Array} nestedHeadings - Nested headings (starting at H1).
+ * @returns {Object<string, Array>} Flat headings grouped by level (h1–h6).
+ */
+const flattenHeadingItems = (nestedHeadings) => {
+    const flatMap = {
+        h1: [],
+        h2: [],
+        h3: [],
+        h4: [],
+        h5: [],
+        h6: [],
+    };
+
+    const traverse = (nodes) =>
+        nodes.forEach(({ children = [], ...rest }) => {
+            const level = rest.label.toLowerCase(); // e.g., "H2" → "h2"
+            flatMap[level].push({ ...rest, label: rest.label });
+            if (children.length) traverse(children);
+        });
+
+    traverse(nestedHeadings);
+    return flatMap;
 };
 
 /**
@@ -179,7 +296,6 @@ export default function HeadingTree() {
         const updatedItems = { ...headingItems };
         updatedItems[fromLevel] = updatedItems[fromLevel].filter((item) => item.id !== draggedId);
         updatedItems[level] = [...updatedItems[level].slice(0, insertIndex), { ...draggedItem, label: level.toUpperCase() }, ...updatedItems[level].slice(insertIndex)];
-
         setHeadingItems(updatedItems);
     };
 
@@ -227,7 +343,7 @@ export default function HeadingTree() {
                 </DndContext>
             </div>
             <div className="w-[40%]">
-                <pre className="text-[11px]">{JSON.stringify(headingItems, null, 2)}</pre>
+                <pre className="text-[11px]">{JSON.stringify(nestHeadingItems(headingItems), null, 2)}</pre>
             </div>
         </div>
     );
